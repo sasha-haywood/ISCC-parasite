@@ -109,8 +109,6 @@ summary(z.acantho)
 ggplot(alldata, aes(acantho, fill = month)) +
   geom_histogram()
 
-# Maybe best to make it binomial.  Either acantho = 0 or not 0
-
 
 # here's what it looks like as a poisson model
 poiss.acantho = glm(acantho ~ Gen_freq_all + Gen_freq_species + alleles + mass +
@@ -121,9 +119,6 @@ ggplot(alldata, aes(acantho, fill = month)) +
   geom_histogram()
 # looks like only species and mass matters
 drop1(poiss.acantho, test = "Chi")
-
-
-# Maybe best to make it binomial.  Either acantho = 0 or not 0
 # can remove sex
 m1 = glm(acantho ~ Gen_freq_all + Gen_freq_species + alleles + 
            mass + month + species, alldata, family = "poisson")
