@@ -129,9 +129,11 @@ step(m1)
 # preferred model does not include alleles but that is what we are testing for,
 # so leave it in anyway.
 
-# These models show some heteroskedasticity.  We can try 
 acantho.final = glm(acantho ~ alleles + mass + month + species, alldata, 
                     family = "poisson")
 summary(poiss.acantho)
 summary(acantho.final)
 # alleles is not significant in either model
+
+# These models show some heteroskedasticity.  We can try quasi-poisson or poisson 
+# with dispersion. We will try to have a solution to heteroskedasticity by Mon.
