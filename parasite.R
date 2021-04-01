@@ -137,3 +137,26 @@ summary(acantho.final)
 
 # These models show some heteroskedasticity.  We can try quasi-poisson or poisson 
 # with dispersion. We will try to have a solution to heteroskedasticity by Mon.
+
+
+plot(poiss.gill, which = 1)
+# looks cone shaped
+
+quasipoiss.gill = glm(gill ~ Gen_freq_all + Gen_freq_species + alleles + 
+                   mass +
+                   sex + month + species, alldata, family = "quasipoisson")
+plot(quasipoiss.gill, which = 1)
+# dispersion of residuals of quasipoisson looks exactly the same
+
+sigma2 = sum(residuals(poiss.gill,type="pearson")^2)/poiss.gill$df.residuals
+summary(poiss.gill, dispersion = sigma2)
+# I'm not sure how to do this.  This code doesn't work.
+
+#### Trying this, based on what the user on stackexchange suggested
+library(DHARMa)
+library(lme4)
+plot(simulateResiduals(poiss.gill))
+plot(simulateResiduals(poiss.acantho))
+
+# I don't completely understand what this is doing, but it looks like it is
+# showing that residuals are homoskedastic.  Sounds good to me!
