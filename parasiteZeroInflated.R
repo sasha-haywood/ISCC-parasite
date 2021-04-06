@@ -141,7 +141,7 @@ summary(poiss.acantho)
 summary(acantho.small)
 # alleles is not significant in either model
 
-################# check for homoskedasticity
+################# check for homoskedasticity with DHARMa package
 
 plot(simulateResiduals(poiss.gill))
 plot(simulateResiduals(poiss.acantho))
@@ -155,9 +155,11 @@ z.gill = glmmTMB(gill ~ Gen_freq_all + Gen_freq_species + alleles +
                    sex + month + species, alldata,
                    ziformula = ~ 1 , family = "poisson")
 plot(simulateResiduals(z.gill))
+## This test shows no problems with dispersion or heteroskedasticity or outliers.
 
-#### This is the exact same model, built the was it appears in our text book,
-#### but DHARMa only works with glmmTMB
+#### This is the exact same model, built a package that is more common.  
+#### The only benefit of the glmmTMB model is that it can be tested 
+#### for heteroskedasticity and other problems with the DHARMa package
 z2.gill = zeroinfl(gill ~ Gen_freq_all + Gen_freq_species + alleles + 
                    mass +
                    sex + month + species | 1, alldata,
@@ -165,11 +167,8 @@ z2.gill = zeroinfl(gill ~ Gen_freq_all + Gen_freq_species + alleles +
 
 
 ## Looks like we want zero inflated for the gill model after all!
-### Ben, this is where I'm not sure how to interpret the zero inflated
-### part when there is only an intercept.
+
 summary(z.gill)
-
-
 
 ##### zero inflated model with acantho as response
 
@@ -183,17 +182,29 @@ plot(simulateResiduals(z.acantho))
 summary(z.acantho)
 ## Looks like we want zero inflated for both.
 
+## The zero-inflated gill model starts by telling us that the odds of getting a
+## 0 right off the bat is e^-0.09866:0 = .9061:0
+## which could also be stated as a probability of .9061/1.9061 = .48
+## The other 52% of the data fits a poisson model where the coefficient for alleles 
+## is -.20940 so when alleles increases by 1 unit, the number of gill 
+## parasites changes by a factor of e^-20340 = .8111
+## Or it decreases by 18.89%
 
-## Here are quasipoisson and dispersion models, which I don't think we want.
+## The zero-inflated acantho model starts by telling us that the odds of getting
+## a 0 is e^-0.2750 = .7596 or a probability of .7596/1.7596 = .43
+## The rest of the data fits a poisson model where the coefficient for alleles
+## is -6.895e-02 so when alleles increases by 1 unit, the number of
+## acantho parasites changes by a factor of e^-0.06895 = .9334
+## which is not statistically significant.
+## Mass and species is much more important.
 
-quasipoiss.gill = glm(gill ~ Gen_freq_all + Gen_freq_species + alleles + 
-                        mass +
-                        sex + month + species, alldata, family = "quasipoisson")
-plot(quasipoiss.gill, which = 1)
-# dispersion of residuals of quasipoisson looks exactly the same
+## If you end up removing sex from the model, you will be able to include more 
+## observations and the coefficients will change, but you should be able to 
+## calculate the new interpretations.
 
-sigma2 = sum(residuals(poiss.gill,type="pearson")^2/poiss.gill$df.residual)
-summary(poiss.gill, dispersion = sigma2)
+
+
+
 
 
 
